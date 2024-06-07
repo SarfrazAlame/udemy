@@ -5,7 +5,7 @@ import Sidebar from "./Sidebar";
 
 const MobileSidebar = () => {
   return (
-    <div>
+    <div className="md:hidden">
       <Sheet>
         <SheetTrigger>
           <Menu />
