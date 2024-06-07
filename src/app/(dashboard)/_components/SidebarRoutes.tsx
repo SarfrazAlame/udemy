@@ -1,17 +1,35 @@
-'use client'
-import { Layout } from 'lucide-react'
-import React from 'react'
+"use client";
+import { Compass, Layout } from "lucide-react";
+import React from "react";
+import SidebarItems from "./SidebarItems";
 
 const guestRoutes = [
-    {
-        icon:Layout,
-    }
-]
+  {
+    icon: Layout,
+    label: "Dashboard",
+    href: "/",
+  },
+  {
+    icon: Compass,
+    label: "Browse",
+    href: "/search",
+  },
+];
 
 const SidebarRoutes = () => {
+  const routes = guestRoutes;
   return (
-    <div>SidebarRoutes</div>
-  )
-}
+    <div className="flex flex-col w-full">
+      {routes.map((route) => (
+        <SidebarItems
+          key={route.href}
+          icon={route.icon}
+          label={route.label}
+          href={route.href}
+        />
+      ))}
+    </div>
+  );
+};
 
-export default SidebarRoutes
+export default SidebarRoutes;
