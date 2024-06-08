@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_ADDON_URI")
+  url      = env("DATABASE_URL")
 }
 
 model Course {
@@ -16,7 +16,7 @@ model Course {
   price       Float?
   isPublished Boolean @default(false)
 
-  categoryId String
+  categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id])
 
   attachments Attachment[]
