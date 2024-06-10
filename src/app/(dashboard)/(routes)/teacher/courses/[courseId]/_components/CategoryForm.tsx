@@ -5,6 +5,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -33,7 +34,7 @@ interface CategoryFormProps {
 }
 
 const formSchema = z.object({
-  category: z.string(),
+  categoryId: z.string().min(1),
 });
 
 const CategoryForm = ({
@@ -42,33 +43,49 @@ const CategoryForm = ({
   options,
 }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState({
-    categoryId: "",
-  });
+
   const router = useRouter();
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
   };
 
-  const handlerSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory({ categoryId: e.target.value });
-  };
-
   const selectedOption = options.find(
     (option) => option.value === initialData.categoryId
   );
 
-  const handlerSave = async () => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      categoryId: initialData.categoryId || "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
     try {
-      await axios.patch(`/api/courses/${courseId}`, selectedCategory);
-      toast.success("Course updated");
+      await axios.patch(`/api/courses/${courseId}`, values);
+      toast.success("course successfull");
       toggleEdit();
       router.refresh();
     } catch (error) {
       toast.error("Something went wrong");
+      console.log(error);
     }
   };
+
+  const { isValid, isSubmitting } = form.formState;
+
+  // const handlerSave = async () => {
+  //   try {
+  //     await axios.patch(`/api/courses/${courseId}`, selectedCategory);
+  //     toast.success("Course updated");
+  //     toggleEdit();
+  //     router.refresh();
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // };
 
   return (
     <div className="w-full mt-6 border bg-slate-100 rounded-md p-4">
@@ -96,17 +113,41 @@ const CategoryForm = ({
         </p>
       )}
       {isEditing && (
-        <div className="flex flex-col w-20 gap-y-3">
-          <select onChange={handlerSelectChange} className="w-[20rem]">
-            <option value="">Select category...</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.label}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <Button onClick={handlerSave}>Save</Button>
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Options..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {options.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.label}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex items-center gap-x-2">
+              <Button disabled={!isValid || isSubmitting} type="submit">
+                Save
+              </Button>
+            </div>
+          </form>
+        </Form>
       )}
     </div>
   );
