@@ -33,7 +33,7 @@ interface CategoryFormProps {
 }
 
 export const formSchema = z.object({
-  name: z.string().min(1),
+  categoryId: z.string().min(1),
 });
 
 const CategoryForm = ({
@@ -56,7 +56,7 @@ const CategoryForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: initialData.categoryId || "",
+      categoryId: initialData.categoryId || "",
     },
   });
 
@@ -105,7 +105,7 @@ const CategoryForm = ({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -118,7 +118,7 @@ const CategoryForm = ({
                       </SelectTrigger>
                       <SelectContent>
                         {options.map((item, i) => (
-                          <SelectItem key={i} value={item.label}>
+                          <SelectItem key={i} value={item.value}>
                             {item.label}
                           </SelectItem>
                         ))}
