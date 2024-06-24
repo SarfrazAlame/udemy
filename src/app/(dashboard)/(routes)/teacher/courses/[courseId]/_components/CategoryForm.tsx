@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import {
   Form,
   FormControl,
@@ -8,13 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,8 +27,8 @@ interface CategoryFormProps {
   options: { label: string; value: string }[];
 }
 
-const formSchema = z.object({
-  categoryId: z.string().min(1),
+export const formSchema = z.object({
+  name: z.string().min(1),
 });
 
 const CategoryForm = ({
@@ -57,15 +51,14 @@ const CategoryForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categoryId: initialData.categoryId || "",
+      name: initialData.categoryId || "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       await axios.patch(`/api/courses/${courseId}`, values);
-      toast.success("course successfull");
+      toast.success("course updated");
       toggleEdit();
       router.refresh();
     } catch (error) {
@@ -75,17 +68,6 @@ const CategoryForm = ({
   };
 
   const { isValid, isSubmitting } = form.formState;
-
-  // const handlerSave = async () => {
-  //   try {
-  //     await axios.patch(`/api/courses/${courseId}`, selectedCategory);
-  //     toast.success("Course updated");
-  //     toggleEdit();
-  //     router.refresh();
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-  // };
 
   return (
     <div className="w-full mt-6 border bg-slate-100 rounded-md p-4">
@@ -117,26 +99,12 @@ const CategoryForm = ({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="categoryId"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Options..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {options.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.label}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Combobox {...options} {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
