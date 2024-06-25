@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: { courseId: strin
         const attachment = await db.attachment.create({
             data: {
                 url,
-                name: url,
+                name: url.split("/").pop(),
                 courseId: params.courseId
             }
         })

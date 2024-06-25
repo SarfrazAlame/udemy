@@ -1,7 +1,7 @@
 "use client";
 import { Attachment, Course } from "@prisma/client";
 import axios from "axios";
-import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
+import { File, ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -27,7 +27,7 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/attachments`, values);
+      await axios.post(`/api/courses/${courseId}/attachments`, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
@@ -48,6 +48,14 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
               Add a file
             </>
           )}
+          {!isEditing && initialData.attachemnts?.length > 0 && (
+            <>
+              <div>
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit attachemnt
+              </div>
+            </>
+          )}
           {!isEditing && (
             <>
               {initialData.attachemnts?.length === 0 && (
@@ -55,31 +63,24 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
                   No Attachments yet
                 </p>
               )}
-            </>
-          )}
-          {!isEditing && initialData.imageUrl && (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit attachemnt
+              {initialData.attachemnts?.length > 0 && (
+                <div className="space-y-2">
+                  {initialData.attachemnts.map((attachment) => (
+                    <div
+                      key={attachment.id}
+                      className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
+                    >
+                      <File className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <p className="text-xs line-clamp-1">{attachment.name}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </Button>
       </div>
-      {!isEditing &&
-        (!initialData.imageUrl ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
-            <ImageIcon />
-          </div>
-        ) : (
-          <div className="relative aspect-video mt-2">
-            <Image
-              alt="Upload"
-              fill
-              className="object-cover rounded-md"
-              src={initialData.imageUrl}
-            />
-          </div>
-        ))}
+
       {isEditing && (
         <div>
           <FileUpload
