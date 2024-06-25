@@ -1,5 +1,5 @@
 "use client";
-import { Course } from "@prisma/client";
+import { Attachment, Course } from "@prisma/client";
 import axios from "axios";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import Image from "next/image";
@@ -11,14 +11,12 @@ import { FileUpload } from "@/components/fileUpload";
 import { Button } from "@/components/ui/button";
 
 interface AttachmentFormProps {
-  initialData: Course;
+  initialData: Course & { attachemnts: Attachment[] };
   courseId: string;
 }
 
 const formSchema = z.object({
-  imageUrl: z.string().min(1, {
-    message: "Description is required",
-  }),
+  url: z.string().min(1),
 });
 
 const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
@@ -29,7 +27,7 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      await axios.patch(`/api/courses/${courseId}/attachments`, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
@@ -44,11 +42,19 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
         Course Attachment
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing && <>Cancel</>}
-
-          {!isEditing && !initialData.imageUrl && (
+          {!isEditing && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add an attachment
+              Add a file
+            </>
+          )}
+          {!isEditing && (
+            <>
+              {initialData.attachemnts?.length === 0 && (
+                <p className="text-sm mt-2 text-slate-500 italic">
+                  No Attachments yet
+                </p>
+              )}
             </>
           )}
           {!isEditing && initialData.imageUrl && (
@@ -77,15 +83,15 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
       {isEditing && (
         <div>
           <FileUpload
-            endPoint="courseImage"
+            endPoint="courseAttachment"
             onChange={(url) => {
               if (url) {
-                onSubmit({ imageUrl: url });
+                onSubmit({ url: url });
               }
             }}
           />
           <div className="text-xs text-muted-foreground mt-4">
-            16:9 aspect ratio recommend
+            Add anything your students might need to complete the course{" "}
           </div>
         </div>
       )}

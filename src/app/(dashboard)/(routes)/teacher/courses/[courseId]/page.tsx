@@ -26,6 +26,13 @@ const page = async ({ params }: { params: { courseId: string } }) => {
     where: {
       id: params.courseId,
     },
+    include: {
+      attachments: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
   });
 
   const categories = await db.category.findMany({
