@@ -14,6 +14,7 @@ import ImageForm from "./_components/ImageForm";
 import CategoryForm from "./_components/CategoryForm";
 import { IconBadge } from "@/components/IconBagde";
 import PriceForm from "./_components/PriceForm";
+import AttachmentForm from "./_components/AttachmentForm";
 
 const page = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
@@ -101,7 +102,7 @@ const page = async ({ params }: { params: { courseId: string } }) => {
             <IconBadge icon={File} />
             <h2 className="text-xl">Resources & Attachments</h2>
           </div>
-          <ImageForm initialData={course} courseId={course.id} />
+          <AttachmentForm initialData={course} courseId={course.id} />
         </div>
       </div>
     </div>

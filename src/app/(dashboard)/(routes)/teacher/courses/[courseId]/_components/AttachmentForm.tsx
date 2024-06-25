@@ -10,7 +10,7 @@ import { z } from "zod";
 import { FileUpload } from "@/components/fileUpload";
 import { Button } from "@/components/ui/button";
 
-interface ImageFormProps {
+interface AttachmentFormProps {
   initialData: Course;
   courseId: string;
 }
@@ -21,7 +21,7 @@ const formSchema = z.object({
   }),
 });
 
-const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
+const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
 
@@ -41,20 +41,20 @@ const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course image
+        Course Attachment
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing && <>Cancel</>}
 
           {!isEditing && !initialData.imageUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add an image
+              Add an attachment
             </>
           )}
           {!isEditing && initialData.imageUrl && (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit image
+              Edit attachemnt
             </>
           )}
         </Button>
@@ -93,4 +93,4 @@ const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   );
 };
 
-export default ImageForm;
+export default AttachmentForm;
